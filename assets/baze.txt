@@ -1,0 +1,24 @@
+{
+	kafedra vishmata
+	left {
+		zadaet mnogo domashki na seminare
+		left {
+			shtepin
+		}
+		right {
+			zanimaetsa borboy 
+			left {
+				karzhemanov
+			}
+			right {
+				fachit na examene 
+				left {
+					umnov
+				}
+				right {
+					skubach
+				}
+			}	
+		}
+	}
+}
