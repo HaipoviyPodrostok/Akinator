@@ -6,19 +6,22 @@
 			shtepin
 		}
 		right {
-			zanimaetsa borboy 
+			zanimaetsa borboy
 			left {
 				karzhemanov
 			}
 			right {
-				fachit na examene 
+				fachit na examene
 				left {
 					umnov
 				}
 				right {
 					skubach
 				}
-			}	
+			}
 		}
+	}
+	right {
+		ovchos
 	}
 }

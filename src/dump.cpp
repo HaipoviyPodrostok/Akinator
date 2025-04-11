@@ -19,9 +19,8 @@ tree_err_t tree_dump(tree_t* tree, call_cnt_t* call_cnt) {
     char*  dot_filename = NULL;
     ERROR_HANDLE(make_dot_filename(&dot_filename, call_cnt));
 
-    printf("%s\n", dot_filename);
-
     FILE* dot_file = fopen(dot_filename, "w");
+    str_dtor(dot_filename);
     if (!dot_file) return TREE_ERR_FILE_OPEN_ERROR;
     
     if (tree->root == NULL) {
@@ -71,8 +70,10 @@ tree_err_t print_node(node_t* current, FILE* dot_file, tree_t* tree) {
 
     fprintf(dot_file, "\n    node%p [fillcolor= \"%s\", label=\"{<f0> value: %s | { <f1> left: %p |<f2> right: %p }}\"]\n", current, fillcolor, current->str, current->left, current->right);
 
-    if (current->left)    fprintf(dot_file, "    node%p:f1 -> node%p:f0 [label=\"Да\", fontcolor= \""LEFT_ARROW_COLOR"\", color= \""LEFT_ARROW_COLOR"\", penwidth=2]\n", current, current->left);
-    if (current->right)   fprintf(dot_file, "    node%p:f2 -> node%p:f0 [label=\"Нет\", fontcolor= \""RIGHT_ARROW_COLOR"\", color= \""RIGHT_ARROW_COLOR"\", penwidth=2]\n", current, current->right);
+    if (current->left)    fprintf(dot_file, "    node%p:f1 -> node%p:f0 [label=\"Да\", fontcolor= \""LEFT_ARROW_COLOR"\", "
+                                            "color= \""LEFT_ARROW_COLOR"\", penwidth=2]\n", current, current->left);
+    if (current->right)   fprintf(dot_file, "    node%p:f2 -> node%p:f0 [label=\"Нет\", fontcolor= \""RIGHT_ARROW_COLOR"\", "
+                                            "color= \""RIGHT_ARROW_COLOR"\", penwidth=2]\n", current, current->right);
 
     return TREE_ERR_SUCCESS;
 }

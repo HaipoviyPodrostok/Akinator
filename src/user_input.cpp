@@ -79,33 +79,29 @@ tree_err_t handle_answer(node_t* current) {
         scanf("%ms", &answer);
         
         if (strcmp(answer, "yes") == 0) {
-            free(answer);
+            str_dtor(answer);
             printf("GOYDA\n");
             return TREE_ERR_SUCCESS;
         }
         else if (strcmp(answer, "no") == 0) {
-            free(answer);
-            
+            str_dtor(answer);     
+            free_bufer();
+
             printf("What is it then?\n");
-            
-            char* new_object = NULL; 
-            scanf("%ms", &new_object);
-            
-            printf("what features does it have?\n");
-            
-            char* features = NULL;
-            scanf("%ms", &features);
+            char new_object[MAX_CONSOLE_STR_SIZE] = {}; 
+            ERROR_HANDLE(read_from_console(new_object));
+
+            printf("What features does it have?\n");  
+            char features[MAX_CONSOLE_STR_SIZE] = {};
+            ERROR_HANDLE(read_from_console(features));
             
             insert_right(current, current->str);    
             
-            free(current->str);
-            current->str = NULL;
+            str_dtor(current->str);
             current->str = strdup(features);
             if (!current->str) return TREE_ERR_ALLOCATION_ERROR;
-            free(features);
             
             insert_left(current, new_object);
-            free(new_object);
             
             printf("New object nad written\n");
             
@@ -117,5 +113,19 @@ tree_err_t handle_answer(node_t* current) {
         }
     }
 
+    return TREE_ERR_SUCCESS;
+}
+
+tree_err_t read_from_console(char* str) {
+    if (!fgets(str, MAX_CONSOLE_STR_SIZE, stdin)) return TREE_ERR_INPUT_SCAN_ERROR;
+    
+    size_t str_len = strlen(str);
+    
+    if (str_len > 0 && (str)[str_len - 1] == '\n') {
+        str[str_len - 1] = '\0';
+    } else {
+        printf("The name of the object is too long, it was shortened to the first 50 characters\n");
+        free_bufer();
+    }
     return TREE_ERR_SUCCESS;
 }

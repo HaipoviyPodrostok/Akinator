@@ -4,13 +4,13 @@
 #include <cstdio>
 #include <cstdlib>
 
-#define ERROR_HANDLE(call_func, ...) ({                                  \
-    tree_err_t error = call_func;                                        \
-    if (error) {                                                         \
-        fprintf(stderr, "[" #call_func "] Error code: %d\n", error);     \
-        __VA_ARGS__;                                                     \
-        return error;                                                    \
-    }                                                                    \
+#define ERROR_HANDLE(call_func, ...) ({                                             \
+    tree_err_t error = call_func;                                                   \
+    if (error) {                                                                    \
+        fprintf(stderr, "[" #call_func "] Error: %s\n", tree_error_str(error));     \
+        __VA_ARGS__;                                                                \
+        return error;                                                               \
+    }                                                                               \
 });
 
 typedef enum { 
@@ -29,6 +29,14 @@ typedef enum {
     TREE_ERR_INSERTION_ERROR = 12,
     TREE_ERR_INPUT_FILE_INCORRECT = 13,
     TREE_ERR_FILL_NODE_ERROR = 14,
+    TREE_ERR_INPUT_SCAN_ERROR = 15,
+    TREE_ERR_TOO_FEW_COMMAND_LINE_ARGUMENTS = 16,
+    TREE_ERR_UNKNOWN_ERROR = 17,
 } tree_err_t;
+
+void free_bufer(void);
+void skip_spaces(FILE* tree_source);
+void str_dtor(char* str);
+const char* tree_error_str(tree_err_t error);
 
 #endif //UTILS_H  

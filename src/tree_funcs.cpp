@@ -12,7 +12,7 @@ tree_err_t tree_ctor(tree_t* tree, call_cnt_t* call_cnt) {
     
     //TREE INITIALIZATION:
     tree->root = NULL;
-    tree->size = 0;
+    tree->size = 0;      //TODO size make
 
     //CALL_COUNTER INITIALIZATION:
     call_cnt->call_num = 0;
@@ -100,23 +100,21 @@ tree_err_t node_add_recursion(node_t* current, const char* str) {
     return TREE_ERR_SUCCESS;
 }
 
-tree_err_t insert_root(tree_t* tree, char* str) {
-    
-    assert(tree);
+tree_err_t insert_root(node_t** root, char* str) {
 
-    if (tree->root) {
+    if (*root) {
         fprintf(stderr, "Root is not empty!\n");
         return TREE_ERR_INSERTION_ERROR;
     }
 
-    tree->root = (node_t*) calloc(1, sizeof(node_t));
-    if (!tree->root) return TREE_ERR_ALLOCATION_ERROR;
+    *root = (node_t*) calloc(1, sizeof(node_t));
+    if (!root) return TREE_ERR_ALLOCATION_ERROR;
 
-    tree->root->left  = NULL;
-    tree->root->right = NULL; 
+    (*root)->left  = NULL;
+    (*root)->right = NULL; 
 
-    tree->root->str = strdup(str);
-    if (!tree->root->str) return TREE_ERR_STR_PRINT_ERROR;
+    (*root)->str = strdup(str);
+    if (!(*root)->str) return TREE_ERR_STR_PRINT_ERROR;
 
     return TREE_ERR_SUCCESS;
 }
@@ -139,6 +137,8 @@ tree_err_t insert_left(node_t* current, char* str) {
 
     new_node->str = strdup(str);
     if (!new_node->str) return TREE_ERR_ALLOCATION_ERROR;
+
+    current->left = new_node;
     
     return TREE_ERR_SUCCESS;
 }
@@ -161,6 +161,8 @@ tree_err_t insert_right(node_t* current, char* str) {
 
     new_node->str = strdup(str);
     if (!new_node->str) return TREE_ERR_STR_PRINT_ERROR;
+
+    current->right = new_node;
 
     return TREE_ERR_SUCCESS;
 }
