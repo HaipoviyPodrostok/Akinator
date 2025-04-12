@@ -27,6 +27,11 @@
 #define NODE_COLOR "#00FFFF"
 #define LEFT_ARROW_COLOR "#008000"
 #define RIGHT_ARROW_COLOR "#B22222"
+#define COLOR_RED     "\033[31m"
+#define COLOR_GREEN   "\033[32m"
+#define COLOR_YELLOW  "\033[33m"
+#define COLOR_BLUE    "\033[34m"
+#define COLOR_RESET   "\033[0m"
 
 typedef struct Node {
     char* str;   
@@ -53,6 +58,14 @@ typedef enum NodeType {
     NODE_TYPE_EMPTY_NODE = 6,
 } node_type_t;
 
+typedef enum InputAction {
+    INPUT_ACTION_PLAY = 1,
+    INPUT_ACTION_OBJECT_DESCRIPTION = 2,
+    INPUT_ACTION_SAVE_TREE_TO_FILE = 3,
+    INPUTACTION_TREE_DUMP = 4,
+    INPUT_ACTION_EXIT = 5,
+} input_action_t;
+
 //CTOR
 tree_err_t tree_ctor(tree_t* tree, call_cnt_t* call_cnt);
 tree_err_t fill_tree_from_file(const char* const tree_source_filename, tree_t* tree, call_cnt_t* call_cnt);
@@ -63,7 +76,7 @@ tree_err_t fill_node(FILE* tree_source, node_t** current, node_type_t node_type)
 tree_err_t insert_root(node_t** root, char* str);
 tree_err_t insert_left(node_t* current, char* str);
 tree_err_t insert_right(node_t* current, char* str);
-tree_err_t user_inpurt(tree_t* tree);
+tree_err_t user_inpurt(tree_t* tree, call_cnt_t* call_cnt);
 tree_err_t input_recursion(node_t* current);
 tree_err_t node_add(tree_t* tree, const char* str);
 tree_err_t node_add_recursion(node_t* current, const char* str);
@@ -87,6 +100,6 @@ void dtor_if(int err_num, int dtor_err_num, tree_t* tree);
 //INTERFACE
 tree_err_t handle_question(node_t* current);
 tree_err_t handle_answer(node_t* current);
-tree_err_t read_from_console(char* new_object);
+tree_err_t read_from_console(char* const str);
 
 #endif //LIST_H

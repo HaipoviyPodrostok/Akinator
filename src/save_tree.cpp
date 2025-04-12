@@ -14,13 +14,7 @@ tree_err_t save_tree(tree_t* tree, const char* const filename) {
         return TREE_ERR_FILE_OPEN_ERROR;
     }
 
-    if (!tree->root) {
-        printf("Warning: empty tree was written!\n");
-        if (fclose(file_save_to) != 0) {
-            perror("Can not fclose");
-            return TREE_ERR_FILE_CLOSE_ERROR;
-        }
-    } else {
+    if (tree->root) {
         int height = 0;
         fprintf(file_save_to, "{\n    %s\n", tree->root->str);
         if (tree->root->left) {
@@ -31,8 +25,14 @@ tree_err_t save_tree(tree_t* tree, const char* const filename) {
         }
         fprintf(file_save_to, "}");
         printf("Tree was successfuly written\n");
-    
+        
         return TREE_ERR_SUCCESS;
+    } else {
+        printf("Warning: empty tree was written!\n");
+        if (fclose(file_save_to) != 0) {
+            perror("Can not fclose");
+            return TREE_ERR_FILE_CLOSE_ERROR;
+        }
     }
     return TREE_ERR_UNKNOWN_ERROR;
 }

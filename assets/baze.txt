@@ -1,27 +1,27 @@
 {
-	kafedra vishmata
+	кафедра вышмата
 	left {
-		zadaet mnogo domashki na seminare
+		задает много домашки на семинаре
 		left {
-			shtepin
+			Штепин
 		}
 		right {
-			zanimaetsa borboy
+			занимается борьбой
 			left {
-				karzhemanov
+				каржеманов
 			}
 			right {
-				fachit na examene
+				фачит на экзамне
 				left {
-					umnov
+					умнов
 				}
 				right {
-					skubach
+					скубач
 				}
 			}
 		}
 	}
 	right {
-		ovchos
+		овчос
 	}
 }

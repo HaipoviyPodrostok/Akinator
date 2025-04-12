@@ -103,7 +103,7 @@ tree_err_t node_add_recursion(node_t* current, const char* str) {
 tree_err_t insert_root(node_t** root, char* str) {
 
     if (*root) {
-        fprintf(stderr, "Root is not empty!\n");
+        fprintf(stderr, "Корень не пустой!\n");
         return TREE_ERR_INSERTION_ERROR;
     }
 

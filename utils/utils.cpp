@@ -33,21 +33,16 @@ const char* tree_error_str(tree_err_t error) {
 #undef CASE_ENUM_TO_STRING
 
 void free_bufer(void) {
-    do {
-        getchar();
-    }
-    while (feof(stdin));
-    return;
+    int ch = 0;
+    while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
 void skip_spaces(FILE* tree_source){
     assert(tree_source);
     fscanf(tree_source, "%*[ \t\n]");
-    return;
 }
 
 void str_dtor(char* str) {
     free(str);
     str = NULL;
-    return;
 }
