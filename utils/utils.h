@@ -32,6 +32,7 @@ typedef enum {
     TREE_ERR_INPUT_SCAN_ERROR = 15,
     TREE_ERR_TOO_FEW_COMMAND_LINE_ARGUMENTS = 16,
     TREE_ERR_UNKNOWN_ERROR = 17,
+    TREE_ERR_INCORRECT_STATUS = 18,
 } tree_err_t;
 
 void free_bufer(void);

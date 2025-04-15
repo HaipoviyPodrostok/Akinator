@@ -3,3 +3,4 @@ a.out
 Graphviz_dumps
 Text_dumps
 assets/save.txt
+*.gch

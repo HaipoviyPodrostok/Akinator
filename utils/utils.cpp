@@ -25,6 +25,7 @@ const char* tree_error_str(tree_err_t error) {
         CASE_ENUM_TO_STRING(TREE_ERR_INPUT_SCAN_ERROR);
         CASE_ENUM_TO_STRING(TREE_ERR_TOO_FEW_COMMAND_LINE_ARGUMENTS);
         CASE_ENUM_TO_STRING(TREE_ERR_UNKNOWN_ERROR);
+        CASE_ENUM_TO_STRING(TREE_ERR_INCORRECT_STATUS);
         default:
             return "UNKNOWN_TREE_ERROR";
         return "UNKNOWN_TREE_ERROR";

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
+#include <unistd.h>
 
 #include "tree.h"
 
@@ -11,45 +12,87 @@ tree_err_t user_inpurt(tree_t* tree, call_cnt_t* call_cnt) {
     
     while (tree) {
         int action = 0;
-        printf("==============================================\n"
-               COLOR_RED"Меню:\n"COLOR_RESET COLOR_YELLOW
-               "[1]"COLOR_RESET" играть\n" COLOR_YELLOW
-               "[2]"COLOR_RESET" описание объекта\n" 
-               "[3] сохранение дерева в файл\n"
-               "[4] дамп дерева\n"
-               "[5] выход\n");
-        
+
+        printf("\n\n");
+        printf(BOLD PURPLE "*********************************************\n" RESET);
+        printf(BOLD PURPLE "*                  " BLINK "АКИНАТОР" PURPLE "              *\n" RESET);
+        printf(BOLD PURPLE "*********************************************\n\n" RESET);
+        printf(BOLD YELLOW "1. " RESET GREEN "Начать новую игру\n" RESET);
+        printf(BOLD YELLOW "2. " RESET GREEN "Загрузить сохранение из файла\n" RESET);
+        printf(BOLD YELLOW "3. " RESET GREEN "Составить описание объекта\n" RESET);
+        printf(BOLD YELLOW "4. " RESET GREEN "Сохранить дерево в файл\n" RESET);
+        printf(BOLD YELLOW "5. " RESET GREEN "Сравнить два объекта\n" RESET);   
+        printf(BOLD YELLOW "6. " RESET GREEN "Графический дамп дерева\n" RESET);
+        printf(BOLD YELLOW "7. " RESET GREEN "Об игре\n" RESET);
+        printf(BOLD YELLOW "8. " RESET GREEN "Выход\n\n" RESET);
+        printf(BOLD CYAN "Выберите пункт меню: " YELLOW);
+            
         if (scanf("%d", &action) != 1) {
             perror("Can not");
             return TREE_ERR_INPUT_SCAN_ERROR;
         }
 
         switch(action) {
-            case INPUT_ACTION_PLAY:
-                ERROR_HANDLE(input_recursion(tree->root));
+            
+            case INPUT_ACTION_PLAY: 
+                if (tree->root == NULL) {
+                    slow_print(BOLD RED "\nОшибка: видимо вы забыли загрузить дерево, либо загруженное вами дерево пусто\n" RESET, 5000);
+                    sleep(2);
+                } else {
+                    ERROR_HANDLE(input_recursion(tree->root));
+                }
                 break;
 
+            case INPUT_ACTION_IMPORT_TREE: {
+                printf(BOLD CYAN "\nИз какого файла вы хотите заполнить дерево?:\n" PURPLE);
+                
+                char* filename_str = NULL;
+                scanf("%99ms", &filename_str);
+                
+                FILE* tree_source = fopen(filename_str, "r");
+                if (!tree_source) {
+                    slow_print(BOLD RED "Ошибка: ")
+                    return TREE_ERR_FILE_OPEN_ERROR;
+                }
+            
+                ERROR_HANDLE(fill_tree_from_file(tree_source, tree, call_cnt), tree_dtor(tree));
+                
+                str_dtor(filename_str); 
+                break;
+            }
+            
             case INPUT_ACTION_OBJECT_DESCRIPTION: {
-                printf("Напишите имя объекта чтобы получить описание\n");
+                printf(BOLD CYAN "\nНапишите имя объекта, чтобы получить описание\n" RESET);
                 
                 char* object_name = NULL;
                 scanf("%99ms", &object_name);
                 
                 ERROR_HANDLE(make_description(tree, object_name));
+
+                str_dtor(object_name);
                 break;
             }
 
             case INPUT_ACTION_SAVE_TREE_TO_FILE: {
-                printf("Куда вы хотите сохранить файл?\n");              
+                printf(BOLD CYAN "\nКуда вы хотите сохранить файл?\n" RESET);              
 
                 char* file_save_to_name = NULL;
                 scanf("%99ms", &file_save_to_name);
 
                 ERROR_HANDLE(save_tree(tree, file_save_to_name));
+
+                str_dtor(file_save_to_name);
                 break;
             }
 
-            case INPUTACTION_TREE_DUMP:
+            case INPUT_ACTION_OBJECTS_COMPARISON:
+                break;
+            
+            case INPUT_ACTION_ABOUT_GAME:
+                printf(BOLD RED "Акинатор" BOLD CYAN " - это игра, в которой компьютер пытается угадать задуманный вами персонаж или предмет с помощью наводящих вопросов.\n" RESET);
+                break;
+
+            case INPUT_ACTION_TREE_DUMP:
                 ERROR_HANDLE(tree_dump(tree, call_cnt));
                 break;
 
@@ -57,7 +100,7 @@ tree_err_t user_inpurt(tree_t* tree, call_cnt_t* call_cnt) {
                 return TREE_ERR_SUCCESS;
 
             default:
-                printf("Попробуте заново\n");
+                printf(BOLD CYAN "Попробуте заново\n" RESET);
                 break;
         }
     }
@@ -66,6 +109,8 @@ tree_err_t user_inpurt(tree_t* tree, call_cnt_t* call_cnt) {
 
 tree_err_t input_recursion(node_t* current) {
     
+    assert(current);
+        
     int node_type = 0;
     
     if ((current->left != NULL) && (current->right != NULL)) node_type = NODE_TYPE_QUESTION;
@@ -188,18 +233,115 @@ tree_err_t make_description(tree_t* tree, const char* object) {
     assert(tree);
     assert(object);
 
+    stack_t stack = {};
+    stack_ctor(&stack, STACK_CAPACITY);
+
     if (tree->root) {
-        if(strcasecmp(object, tree->root->str))
-    }
-    
+        if (tree->root->left) {
+            stack_push(&stack, {tree->root->str, NODE_TYPE_LEFT});
+            
+            if_found_t status = IF_FOUND_NOT_FOUND;
+            make_description_recursion(tree->root->left, object, &stack, &status);
+            
+            if      (status == IF_FOUND_NOT_FOUND) stack_pop(&stack);
+            else if (status == IF_FOUND_FOUND)     return TREE_ERR_SUCCESS;
+        }
+        if (tree->root->right) {
+            stack_push(&stack, {tree->root->str, NODE_TYPE_RIGHT});
+            
+            if_found_t status = IF_FOUND_NOT_FOUND;
+            make_description_recursion(tree->root->right, object, &stack, &status);
+            
+            if      (status == IF_FOUND_NOT_FOUND) stack_pop(&stack);
+            else if (status == IF_FOUND_FOUND)     return TREE_ERR_SUCCESS;
+        }
+        
+        printf("Объект не найден\n");
+        return TREE_ERR_SUCCESS;
+    } 
     else  {
         printf("Дерево пустое\n");
         return TREE_ERR_SUCCESS;
     }
-
-
 }
 
-tree_err_t make_description_recursion(node_t* current, const char* object) {
+tree_err_t make_description_recursion(node_t* current, const char* object, stack_t* stack, if_found_t* status_ptr) {
+    assert(current);
+    assert(object);
 
+    if (current->left) {
+        stack_push(stack, {current->str, NODE_TYPE_LEFT});
+        
+        if_found_t status = IF_FOUND_NOT_FOUND;
+        make_description_recursion(current->left, object, stack, &status);
+        
+        if (status == IF_FOUND_NOT_FOUND) {
+            stack_pop(stack);
+        } 
+        else if (status == IF_FOUND_FOUND) {
+            *status_ptr = IF_FOUND_FOUND;
+            return TREE_ERR_SUCCESS;
+        }
+        else return TREE_ERR_UNKNOWN_ERROR;
+    }
+    if (current->right) {
+        stack_push(stack, {current->str, NODE_TYPE_RIGHT});
+        
+        if_found_t status = IF_FOUND_NOT_FOUND;
+        make_description_recursion(current->right, object, stack, &status);
+        
+        if (status == IF_FOUND_NOT_FOUND) {
+            stack_pop(stack);
+        } 
+        else if (status == IF_FOUND_FOUND) {
+            *status_ptr = IF_FOUND_FOUND;
+            return TREE_ERR_SUCCESS;
+        }
+        else return TREE_ERR_UNKNOWN_ERROR;
+    }
+    else if (strcasecmp(current->str, object) == 0) {
+        printf("Объект обладает следующими свойствами:\n");
+        print_stack(stack);
+        *status_ptr = IF_FOUND_FOUND;
+    }
+    else return TREE_ERR_SUCCESS;
+    return TREE_ERR_UNKNOWN_ERROR;
+}
+
+tree_err_t print_stack(stack_t* stack) {
+    assert(stack);
+    
+    stack_t inverted_stack = {};
+    stack_ctor(&inverted_stack, STACK_CAPACITY);         //TODO статик переменные для стека
+
+    stack_reverse(stack, &inverted_stack);
+ 
+    while(inverted_stack.size > 0) {
+        stack_elem_t stack_peak = {NULL, 0};
+        stack_peak = stack_pop(&inverted_stack);
+        if      (stack_peak.node_type == NODE_TYPE_LEFT)  printf("%s\n", stack_peak.str);
+        else if (stack_peak.node_type == NODE_TYPE_RIGHT) printf("не %s\n", stack_peak.str);
+        else    return TREE_ERR_UNKNOWN_ERROR;
+    }
+    
+    return TREE_ERR_SUCCESS;
+}
+
+tree_err_t stack_reverse(stack_t* stack, stack_t* inverted_stack) {
+    assert(stack);
+    assert(inverted_stack);
+
+    while (stack->size > 0) {      // TODO обработать ошибки стека
+        stack_push(inverted_stack, stack_pop(stack));
+    }
+
+    return TREE_ERR_SUCCESS;
+}
+
+void slow_print(const char* str, int delay) {
+    for (int i = 0; str[i]; i++) {
+        putchar(str[i]);
+        fflush(stdout);
+        usleep(delay);
+    }
 }

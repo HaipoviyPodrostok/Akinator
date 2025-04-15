@@ -5,15 +5,9 @@
 
 #include "tree.h"
 
-tree_err_t fill_tree_from_file(const char* const tree_source_filename, tree_t* tree, call_cnt_t* call_cnt) {
+tree_err_t fill_tree_from_file(FILE* tree_source, tree_t* tree, call_cnt_t* call_cnt) {
     
-    assert(tree_source_filename);
-    
-    FILE* tree_source = fopen(tree_source_filename, "r");
-    if (!tree_source) {
-        perror("Can not open file");
-        return TREE_ERR_FILE_OPEN_ERROR;
-    }
+    assert(tree_source);
 
     if (tree->root == NULL) {      
         char* str = NULL;
@@ -47,7 +41,7 @@ tree_err_t fill_tree_from_file(const char* const tree_source_filename, tree_t* t
     }
     if (strcmp(str, "}") == 0) {
         str_dtor(str);
-        printf("Tree was succesfuly written\n"); 
+        printf(CYAN "Дерево успешно заполнено!\n" RESET); 
         return TREE_ERR_SUCCESS;
     }
     else {

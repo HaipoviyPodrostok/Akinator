@@ -40,6 +40,8 @@ tree_err_t tree_dump(tree_t* tree, call_cnt_t* call_cnt) {
     sprintf(system_command, SYSTEM_COMMAND_TEMPLATE, call_cnt->launch_num, call_cnt->call_num, call_cnt->launch_num, call_cnt->call_num);
     system(system_command);
 
+    printf("Графический дамп сохранен в папке" GRAPHIZ_DUMPS_FOLDER);
+
     return TREE_ERR_SUCCESS;
 }
 

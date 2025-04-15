@@ -24,11 +24,11 @@ tree_err_t save_tree(tree_t* tree, const char* const filename) {
             ERROR_HANDLE(save_tree_recursion(tree->root->right, file_save_to, NODE_TYPE_RIGHT, height + 1));
         }
         fprintf(file_save_to, "}");
-        printf("Tree was successfuly written\n");
+        printf("Дерево успешно сохранено\n");
         
         return TREE_ERR_SUCCESS;
     } else {
-        printf("Warning: empty tree was written!\n");
+        printf("Варнинг! Было записано пустое дерево\n");
         if (fclose(file_save_to) != 0) {
             perror("Can not fclose");
             return TREE_ERR_FILE_CLOSE_ERROR;

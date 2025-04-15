@@ -13,15 +13,15 @@ void tree_dtor(tree_t* tree) {
 
 void dtor_recursion(node_t* current) {
     
-    assert(current != NULL);
-
-    if (current->left)  dtor_recursion(current->left);
-    if (current->right) dtor_recursion(current->right); 
-    
-    current->left = NULL;
-    current->right = NULL;
-    
-    free(current->str);
-    current->str = NULL;
-    free(current);
+    if (current) {
+        if (current->left)  dtor_recursion(current->left);
+        if (current->right) dtor_recursion(current->right); 
+        
+        current->left = NULL;
+        current->right = NULL;
+        
+        free(current->str);
+        current->str = NULL;
+        free(current);
+    }
 }
