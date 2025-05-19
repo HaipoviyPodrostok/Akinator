@@ -11,10 +11,14 @@
 #define MAX_CONSOLE_STR_SIZE 50
 #define STACK_CAPACITY 20
 
+#define SLOW_PRINT_DELAY 5000
+#define DEFAULT_SLEEP_TIME 2
+
 //FILES
 #define COUNTER_FILENAME "Text_dumps/counter.txt"
 #define DOT_FILENAME "Text_dumps/tree_dump_%lu_%lu.dot"
 #define GRAPHIZ_DUMPS_FOLDER "Graphviz_dumps"
+#define TREE_SOURCE_FILE "assets/baze.txt"
 
 //DOT FILE TEMPLATES
 #define DOT_TITLE "digraph BinaryTree {\n    node [shape=\"Mrecord\", style=\"filled\", fontname=\"Courier New\"];\n"
@@ -73,15 +77,11 @@ typedef enum InputAction {
     INPUT_ACTION_OBJECT_DESCRIPTION = 3,
     INPUT_ACTION_SAVE_TREE_TO_FILE = 4,
     INPUT_ACTION_OBJECTS_COMPARISON = 5,
-    INPUT_ACTION_ABOUT_GAME = 6,
-    INPUT_ACTION_TREE_DUMP = 7,
+    INPUT_ACTION_TREE_DUMP = 6,
+    INPUT_ACTION_ABOUT_GAME = 7,
     INPUT_ACTION_EXIT = 8,
+    INPUT_ACTION_TRY_AGAIN = 9,
 } input_action_t;
-
-typedef enum ifFound {
-    IF_FOUND_NOT_FOUND = 0,
-    IF_FOUND_FOUND = 1,
-} if_found_t;
 
 //CTOR
 tree_err_t tree_ctor(tree_t* tree, call_cnt_t* call_cnt);
@@ -105,7 +105,7 @@ tree_err_t print_node(node_t* current, FILE* dot_file, tree_t* tree);
 tree_err_t make_dot_filename(char** dot_filename, call_cnt_t* call_cnt);
 
 //SAVE TREE
-tree_err_t save_tree(tree_t* tree, const char* const filename);
+tree_err_t save_tree(tree_t* tree, FILE* file_save_to);
 tree_err_t save_tree_recursion(node_t* current, FILE* file_save_to, node_type_t node_type, int height);
 void print_spaces(FILE* file_save_to, int height);
 
@@ -118,11 +118,17 @@ void dtor_if(int err_num, int dtor_err_num, tree_t* tree);
 tree_err_t handle_question(node_t* current);
 tree_err_t handle_answer(node_t* current);
 tree_err_t read_from_console(char* const str);
-tree_err_t make_description(tree_t* tree, const char* object);
-tree_err_t make_description_recursion(node_t* current, const char* object, stack_t* stack, if_found_t* status_ptr);
+tree_err_t make_description(tree_t* tree, const char* object, stack_t* stack);
+tree_err_t make_description_recursion(node_t* current, const char* object, stack_t* stack, bool* ifFound_ptr);
 tree_err_t print_stack(stack_t* stack);
-tree_err_t stack_reverse(stack_t* stack, stack_t* inverted_stack);
-void slow_print(const char* str, int delay);
-
+void stack_reverse(stack_t* stack, stack_t* inverted_stack);
+void slow_print(const char* str, unsigned int delay);
+tree_err_t import_tree_interface(tree_t* tree, call_cnt_t* call_cnt, bool ifUploaded);
+tree_err_t save_tree_interface(tree_t* tree);
+tree_err_t make_comparison(tree_t* tree, const char* first_object, const char* second_object);
+tree_err_t make_comparison_interface(tree_t* tree);
+tree_err_t object_description_interface(tree_t* tree);
+tree_err_t isObjExist(tree_t* tree, const char* object, bool* isFound_ptr);
+tree_err_t isObjExistRec(node_t* current, const char* object, bool* isFound_ptr);
 
 #endif //LIST_H

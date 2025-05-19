@@ -4,15 +4,9 @@
 
 #include "tree.h"
 
-tree_err_t save_tree(tree_t* tree, const char* const filename) {
+tree_err_t save_tree(tree_t* tree, FILE* file_save_to) {
     assert(tree);
-    assert(filename);
-
-    FILE* file_save_to = fopen(filename, "w");
-    if (!file_save_to) {
-        perror("Can not open file");
-        return TREE_ERR_FILE_OPEN_ERROR;
-    }
+    assert(file_save_to);
 
     if (tree->root) {
         int height = 0;
@@ -24,11 +18,11 @@ tree_err_t save_tree(tree_t* tree, const char* const filename) {
             ERROR_HANDLE(save_tree_recursion(tree->root->right, file_save_to, NODE_TYPE_RIGHT, height + 1));
         }
         fprintf(file_save_to, "}");
-        printf("Дерево успешно сохранено\n");
+        printf(BOLD YELLOW "\nДерево успешно сохранено\n\n" RESET);
         
         return TREE_ERR_SUCCESS;
     } else {
-        printf("Варнинг! Было записано пустое дерево\n");
+        printf(BOLD YELLOW "\nВарнинг! Было записано пустое дерево\n" RESET);
         if (fclose(file_save_to) != 0) {
             perror("Can not fclose");
             return TREE_ERR_FILE_CLOSE_ERROR;

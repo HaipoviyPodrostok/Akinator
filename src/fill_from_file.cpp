@@ -8,6 +8,8 @@
 tree_err_t fill_tree_from_file(FILE* tree_source, tree_t* tree, call_cnt_t* call_cnt) {
     
     assert(tree_source);
+    assert(tree);
+    assert(call_cnt);
 
     if (tree->root == NULL) {      
         char* str = NULL;
@@ -41,7 +43,7 @@ tree_err_t fill_tree_from_file(FILE* tree_source, tree_t* tree, call_cnt_t* call
     }
     if (strcmp(str, "}") == 0) {
         str_dtor(str);
-        printf(CYAN "Дерево успешно заполнено!\n" RESET); 
+        slow_print(BOLD YELLOW "\nДерево успешно заполнено!\n\n" RESET, SLOW_PRINT_DELAY);
         return TREE_ERR_SUCCESS;
     }
     else {
