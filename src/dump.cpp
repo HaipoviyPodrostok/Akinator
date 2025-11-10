@@ -12,6 +12,7 @@ tree_err_t tree_dump(tree_t* tree, call_cnt_t* call_cnt) {
         
     call_cnt->call_num++;
     
+    system("mkdir -p Text_dumps");
     FILE* counter_file = fopen(COUNTER_FILENAME, "r");
     if (!counter_file) return TREE_ERR_FILE_OPEN_ERROR;
     if (fscanf(counter_file, "Last launch_num = %lu", &call_cnt->launch_num) != 1) return TREE_ERR_FILE_READING_ERROR;
@@ -36,11 +37,12 @@ tree_err_t tree_dump(tree_t* tree, call_cnt_t* call_cnt) {
     if (fclose(dot_file) != 0)     return TREE_ERR_FILE_CLOSE_ERROR;
     if (fclose(counter_file) != 0) return TREE_ERR_FILE_CLOSE_ERROR;
 
+    system("mkdir -p Graphviz_dumps");
     char system_command[100] = "";
     sprintf(system_command, SYSTEM_COMMAND_TEMPLATE, call_cnt->launch_num, call_cnt->call_num, call_cnt->launch_num, call_cnt->call_num);
     system(system_command);
 
-    printf("Графический дамп сохранен в папке" GRAPHIZ_DUMPS_FOLDER);
+    printf("Графический дамп сохранен в папке " GRAPHIZ_DUMPS_FOLDER);
 
     return TREE_ERR_SUCCESS;
 }

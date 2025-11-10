@@ -19,6 +19,7 @@ tree_err_t tree_ctor(tree_t* tree, call_cnt_t* call_cnt) {
     call_cnt->launch_num = 0;
 
     //PROGRAMM LAUNCH COUNTER:
+    system("mkdir -p Text_dumps");
     FILE* counter_file = fopen(COUNTER_FILENAME, "r+t");
 
     if (!counter_file) {
